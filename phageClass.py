@@ -35,7 +35,7 @@ def get_accession_numbers(fdir = 'data/PhagesDB_accession_numbers.txt'):
 def write_genbank_from_accession_numbers(phage_acession_number_dict):
 	phages = list(phage_acession_number_dict.keys())
 	for i, phage in enumerate(phages):
-		print(f'Phage: {phage} --- {format(i / len(phages) * 100, '.2f')}%')
+		print(f'Phage: {phage} --- {round(i / len(phages) * 100, 2)}%')
 		for accession_number in phage_acession_number_dict[phage]:
 			try:
 				handle = Entrez.efetch(db="nucleotide", id=accession_number, rettype="gb", retmode="text")
@@ -48,11 +48,12 @@ def write_genbank_from_accession_numbers(phage_acession_number_dict):
 				continue
 			EOF = False
 			while not EOF:
-				line = handle.readline().strip()
+				line = handle.readline()
 				with open(op_dir + accession_number + GB_EXT, "a") as file:
-	   		 		file.write(line + '\n')
+	   		 		file.write(line)
 				if line == '//':
 					EOF = True
+			break
 
 print('Loading phage accession numbers ...')
 phage_acession_number_dict = get_accession_numbers(phage_accession_numbers_file)
@@ -66,13 +67,13 @@ op_dir = 'accession_records/'
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
-if True: #Only run if you need to pooulate accession_records directory
+if False: #Only run if you need to pooulate accession_records directory
 	print('Creating genbank files from accession numbers ...')
 	write_genbank_from_accession_numbers(phage_acession_number_dict)
 
 
 for file in getfileswithname(op_dir, GB_EXT):
 	for record in SeqIO.parse(op_dir + file, "genbank"):
-		print(record)
-		quit()8
+		a = record
+	quit()
 
