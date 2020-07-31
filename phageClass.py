@@ -13,10 +13,12 @@ import ssl
 
 phage_accession_numbers_file = 'data/PhagesDB_accession_numbers.txt'
 
-def getfileswithname(fdir, names):			# make name a list
+# Given a directory and a list of names, return those file names which are in the given directory and contain the names.
+def getfileswithname(fdir, names):
 	return [f for f in listdir(fdir) if isfile(join(fdir, f)) and all([x in f for x in names])]
 
 
+# Given a file location of a file with phage names along with their accession number, return a dictionary with phages as the keys and their accession numbers as keys.
 def get_accession_numbers(fdir = 'data/PhagesDB_accession_numbers.txt'):
 	phage_acession_number_dict = defaultdict(list)
 	with open(phage_accession_numbers_file) as csv_file:
@@ -32,7 +34,8 @@ def get_accession_numbers(fdir = 'data/PhagesDB_accession_numbers.txt'):
 	return phage_acession_number_dict
 
 
-def write_genbank_from_accession_numbers(phage_acession_number_dict):
+# Given a phage-accession dictionary, parse GenBank and write separate gb files in the given directory.
+def write_genbank_from_accession_numbers(phage_acession_number_dict, fdir='accession_records/'):
 	phages = list(phage_acession_number_dict.keys())
 	for i, phage in enumerate(phages):
 		print(f'Phage: {phage} --- {round(i / len(phages) * 100, 2)}%')
@@ -49,7 +52,7 @@ def write_genbank_from_accession_numbers(phage_acession_number_dict):
 			EOF = False
 			while not EOF:
 				line = handle.readline()
-				with open(op_dir + accession_number + GB_EXT, "a") as file:
+				with open(fdir + accession_number + GB_EXT, "a") as file:
 	   		 		file.write(line)
 				if line == '//':
 					EOF = True
@@ -69,7 +72,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 if False: #Only run if you need to pooulate accession_records directory
 	print('Creating genbank files from accession numbers ...')
-	write_genbank_from_accession_numbers(phage_acession_number_dict)
+	write_genbank_from_accession_numbers(phage_acession_number_dict, fdir=op_dir)
 
 
 for file in getfileswithname(op_dir, GB_EXT):
